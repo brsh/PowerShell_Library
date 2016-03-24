@@ -1,41 +1,16 @@
-﻿function Get-ColorSample {
-    <# 
-    .SYNOPSIS 
-        Console Color Sample Sheet
+﻿<# 
+.SYNOPSIS 
+    Console Color Sample Sheet
          
-    .DESCRIPTION 
-        Outputs a table of color samples - showing all background and foreground combinations.
+.DESCRIPTION 
+    Outputs a table of color samples - showing all background and foreground combinations.
  
-    .EXAMPLE 
-        PS C:\> Get-ColorSample
+.EXAMPLE 
+    PS C:\> Get-ColorSample
 
-        Writes ... the color samples
-    #>
+    Writes ... the color samples
+#>
 
-
-    #Load up all the colors
-    #Split them into light and dark so we can have 2 lists
-    #    if they ever add "bright" or other colors, could have 3 or more....
-    $f = [enum]::GetValues([System.ConsoleColor])
-    $fdark = $f | where-object { $_ -match "Dark*" } 
-    $flite = $f | Where-Object { $_ -notmatch "Dark" } 
-
-    #Re-bind the colors in our "separated" order
-    #basically a sort because sort-object doesn't quite work right against the enum
-    #at least, I couldn't figure it out in the 10 minutes I spend on it
-    $f = $fdark
-    $f += $flite
-
-
-
-    #Call the function for dark backgrounds, all foregrounds
-    list_it $fdark $f
-    write-host " "
-
-    #Call the function for lite backgrounds, all foregrounds
-    list_it $flite $f
-    write-host " "
-}
 
 function pad ([string] $text, [int16] $i = 2) {
     #Pad the text with spaces
@@ -124,11 +99,9 @@ function Get-ColorSample {
 
     #Re-bind the colors in our "separated" order
     #basically a sort because sort-object doesn't quite work right against the enum
-    #at least, I couldn't figure it out in the 10 minutes I spend on it
+    #at least, I couldn't figure it out in the 10 minutes I spent on it
     $f = $fdark
     $f += $flite
-
-
 
     #Call the function for dark backgrounds, all foregrounds
     list_it $fdark $f
