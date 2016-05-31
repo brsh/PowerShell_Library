@@ -1,3 +1,11 @@
+.EXAMPLE 
+    PS C:\> .\Expand-and-Rename-ZipFile -file .\TEST.zip -destination c:\Files
+
+.EXAMPLE 
+    PS C:\> get-childitem *.zip | .\Expand-and-Rename-ZipFile -destination c:\Files
+
+--------------
+
 We had a need to unzip some files, renaming the extracted files to match the original zip file name + a time/date stamp.
 
 Now, you'd think that would be simple. MS offers APIs in .Net 4.5, there're COM Objects, heck - they even wrote Expand-Archive cmdlets!
