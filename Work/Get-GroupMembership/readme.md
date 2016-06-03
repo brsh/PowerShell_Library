@@ -12,6 +12,7 @@ Features:
 * Recursive!
 * Recursion depth configurable
 * Local and AD
+* Supports Computer by name, by ip, and, if local, by . (that's a dot, by the way)
 * Outputs to png
 * Outputs objects
 * Supports pipeline (computernames in and users out)
@@ -22,4 +23,15 @@ Features:
 Command Line:
 ```
 Get-GroupMembership.ps1 [[-Computer] <string[]>] [-group] <string> [[-depth] <int16>] [[-LevelIndicator] <char>] [-Picture] [-raw] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+Examples:
+```
+.\Get-GroupMembership.ps1 -Computer . -Group Administrators | ft -autosize
+
+.\Get-GroupMembership.ps1 -Computer . -Group Administrators -Picture | ft -autosize
+
+.\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators | ft -autosize
+
+get-content c:\computer.lst | .\Get-GroupMembership.ps1 -Group Administrators | ft -autosize
 ```
