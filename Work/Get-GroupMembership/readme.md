@@ -19,6 +19,7 @@ Features:
 * Cool tree structure
 * Tree depth indicator configurable
 * Or no tree structure - your choice!
+* Line Item and Group Member counts
 
 Command Line:
 ```
