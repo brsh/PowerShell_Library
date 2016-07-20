@@ -17,6 +17,9 @@ Features:
     * Tree depth indicator configurable
     * Or no tree structure - your choice!
 
+Note: You'll probably want to pipe the output to Format-Table -autosize (it just looks better).
+
+Note: When you pipe multiple systems to the script, you should add -GroupBy System to the Format-Table cmdlet.
 
 .PARAMETER  Computer
     The computer(s) to query. If left blank, it will discover the local Domain and use that
@@ -31,7 +34,7 @@ Features:
     Save the group to current directory with filename [Computer]-[Group]-[Timestamp].png
 
 .PARAMETER  Raw
-    Don't use the nice tree layout
+    Don't use the nice tree layout - thar be more fields here
 
 .PARAMETER  LevelIndicator
     Use this char as the tree depth indicator (Default is hyphen)
@@ -40,7 +43,10 @@ Features:
     PS C:\> .\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators | ft -autosize
 
 .EXAMPLE 
-    PS C:\> get-content computers.txt | .\Get-GroupMembership.ps1 -Group Administrators | ft -autosize
+    PS C:\> get-content computers.txt | .\Get-GroupMembership.ps1 -Group Administrators | ft -autosize -GroupBy System
+
+.EXAMPLE 
+    PS C:\> "server1", "server2", "server3" | .\Get-GroupMembership.ps1 -Group Administrators | ft -autosize -GroupBy System
 
 #> 
 
@@ -67,14 +73,23 @@ param (
 )
 
 Begin {
-        [int]$script:ItemCount = -1
-        [int]$Script:TotalAllUsers = 0
+    [int]$script:ItemCount = -1
+    [int]$Script:TotalAllUsers = 0
+
+    if (get-module -ListAvailable ActiveDirectory) {
+        Write-Verbose "The ActiveDirectory module is available"
+    }
+    else {
+        Write-Host "Fatal Error: ActiveDirectory Module NOT FOUND" -ForegroundColor Red
+        exit
+    }
 
     function Get-DomainGroupMembers {
         param (
             [String]$group,
             [String]$parent,
-            [Int]$level = 0
+            [Int]$level = 0,
+            [String] $System
         )
     
         $theGroup = Get-ADGroup -Identity $group
@@ -83,9 +98,8 @@ Begin {
         $results = Get-ADGroupMember -Identity $group | Sort-Object SamAccountName
         $TotalMembers = $results.count
         
-        TheObject -sSam $theGroup.SamAccountName -sName $theGroup.Name -sScope $theGroupsDomain -level $level -sUserOrGroup "Group" -sEnabled "N/A" -sParent $parent -iTotal $TotalMembers
+        TheObject -sSam $theGroup.SamAccountName -sName $theGroup.Name -sScope $theGroupsDomain -level $level -sUserOrGroup "Group" -sEnabled "N/A" -sParent $parent -iTotal $TotalMembers -sSystem $System
 
-        "Found: {0}" -f $TotalMembers | Write-Verbose
         $counter = 0
 
         if ($level -lt $Depth) {
@@ -97,11 +111,11 @@ Begin {
     
                 
                 if ($_.ObjectClass -eq "Group" ) { 
-                        DomainGroupMembers -Group $_.SamAccountName -parent $theGroup.Name -Level ($level + 1)
+                        DomainGroupMembers -Group $_.SamAccountName -parent $theGroup.Name -Level ($level + 1) -System $System
                 }
                 else {
                     $UserIsEnabled = (get-aduser -Identity $_.SamAccountName).Enabled
-                    TheObject -sSam $_.SamAccountName -sName $_.Name -sScope $WhatIsTheDomain -level ($level + 1) -sUserOrGroup "User" -sEnabled $UserIsEnabled -sParent $group -sDN $_.DistinguishedName
+                    TheObject -sSam $_.SamAccountName -sName $_.Name -sScope $WhatIsTheDomain -level ($level + 1) -sUserOrGroup "User" -sEnabled $UserIsEnabled -sParent $group -sDN $_.DistinguishedName -sSystem $System
                 }
             }
         }
@@ -114,7 +128,8 @@ Begin {
             [string] $group,
             [string] $computername,
             [Int]$level = 1,
-            [String] $Parent
+            [String] $Parent,
+            [String] $System
         )
 
         try {
@@ -128,7 +143,7 @@ Begin {
         $Members = @($ADSIGroup.psbase.Invoke("Members"))
         $TotalMembers = $Members.Count
         $Activity = "Getting members of {0} on {1}" -f $group, $computername
-        TheObject -sSam $group -level 0 -sName $group -sScope $computername -sUserOrGroup "Group" -sEnabled "N/A" -sParent $Parent -iTotal $TotalMembers
+        TheObject -sSam $group -level 0 -sName $group -sScope $computername -sUserOrGroup "Group" -sEnabled "N/A" -sParent $Parent -iTotal $TotalMembers -sSystem $System
         $counter = 0
     
         $Members | ForEach-Object {
@@ -165,10 +180,10 @@ Begin {
                     # Check if this group is local or domain.
                     if ($Type -eq 'Local') {
                        # Enumerate members of local group.
-                       Get-LocalGroupMembers $Name $level
+                       Get-LocalGroupMembers $Name $level -System $System
                     } else {
                        # Enumerate members of domain group.
-                       Get-DomainGroupMembers -group $Name -level $level -parent $ADSIGroup.Name
+                       Get-DomainGroupMembers -group $Name -level $level -parent $ADSIGroup.Name -System $System
                     }
                 }
                 else {
@@ -181,7 +196,7 @@ Begin {
                         $FullName = ([ADSI]$_).InvokeGet("FullName")
                     }
                     Catch { $FullName = "" }
-                    TheObject -sSam $Name -sName $FullName -sScope $path[-2] -level $level -sUserOrGroup "User" -sEnabled $enabled -sParent $group -sDN $tempDN
+                    TheObject -sSam $Name -sName $FullName -sScope $path[-2] -level $level -sUserOrGroup "User" -sEnabled $enabled -sParent $group -sDN $tempDN -sSystem $System
                 }
             } Catch {
                 $host.ui.WriteWarningLine(("GLGM {0}" -f $_.Exception.Message))
@@ -261,6 +276,7 @@ function GenFileName {
                 Enabled = $_.Enabled
                 MemberCount = $_.Count
                 ItemNumber = $_.ItemNumber
+                System = $_.System
             }
     
             $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
@@ -293,7 +309,8 @@ function GenFileName {
             [string] $level,
             [string] $sUserOrGroup,
             [string] $sEnabled,
-            [string] $iTotal
+            [string] $iTotal,
+            [string] $sSystem
         )
 
         $AccountName += $sScope
@@ -315,6 +332,7 @@ function GenFileName {
             Enabled = $sEnabled
             Count = $iTotal
             ItemNumber = $script:ItemCount
+            System = $sSystem
         }
         $InfoStack = New-Object -TypeName PSObject -Property $InfoHash
     
@@ -339,14 +357,16 @@ Process {
     $Script:AllResults = @()
     if ($Computer.Length -gt 0) {
         ForEach ($ComputerName in $Computer) {
+            [int]$script:ItemCount = -1
+            [int]$Script:TotalAllUsers = 0
             if ($computername -eq ".") { $computername = $env:COMPUTERNAME }
             $Activity = "Getting members of {0} on {1}" -f $group, $ComputerName
             Write-Progress -Id 0 -Activity $Activity -PercentComplete (10) -Status "Starting subprocess..."
-            "Requested group members of {0} on computer {1} - {2}" -f $group, $computername, $computer.count | Write-Verbose
+            "Requested group members of {0} on computer {1}" -f $group, $computername | Write-Verbose
             $filename = GenFileName -groupname ("{0}-{1}" -f $computername, $group)
             Try {
                 if ([ADSI]::Exists("WinNT://$computerName/$group,group")) {
-                    Get-LocalGroupMembers $group $computername -Parent "{self}"
+                    Get-LocalGroupMembers $group $computername -Parent "{self}" -System $ComputerName
                 }
                 else {
                     $host.ui.WriteErrorLine(("Group {0} on Computer {1} not found" -f $group, $computername))
@@ -371,7 +391,7 @@ Process {
         catch { $domain = "Name not found" }    
         if ($temp) {
             $filename = GenFileName -groupname ("{0}-{1}" -f $domain, $group)
-            Get-DomainGroupMembers $temp.SamAccountName -parent "{self}"
+            Get-DomainGroupMembers $temp.SamAccountName -parent "{self}" -System $domain
         }
         else {
             $host.ui.WriteErrorLine(("Group {0} in Domain {1} not found" -f $group, $domain))
@@ -382,7 +402,7 @@ Process {
     if (($Picture) -and ($Script:AllResults)) {
         "Writing Image {0} ..." -f $filename | Write-Verbose
         Write-Progress -Id 0 -Activity $Activity -PercentComplete (80) -Status "Saving picture..."
-        $picturetext = $AllResults | format-table -AutoSize | out-string
+        $picturetext = $AllResults | format-table -AutoSize -GroupBy System | out-string
         DrawIt $picturetext
     }
     Write-Progress -Id 0 -Activity $Activity -Completed
