@@ -40,7 +40,7 @@ Features:
     PS C:\> .\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators | ft -autosize
 
 .EXAMPLE 
-    PS C:\> get-conten computers.txt | .\Get-GroupMembership.ps1 -Group Administrators | ft -autosize
+    PS C:\> get-content computers.txt | .\Get-GroupMembership.ps1 -Group Administrators | ft -autosize
 
 #> 
 
