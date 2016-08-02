@@ -6,7 +6,7 @@ Now, how hard could it be to re-write that simple vbscript into Powershell? Ther
 
 BUT nothing did quite what I wanted. And then I wanted to make pictures of the info??!!! That's just crazy talk.
 
-So, long story short: this script will inventory group memberships - both local system and AD - and do it recusively - both local system and AD.
+So, long story short: this script will inventory group memberships - both local system and AD - and do it recusively - both local system and AD. 
 
 Features: 
 * Recursive!
@@ -21,18 +21,53 @@ Features:
 * Or no tree structure - your choice!
 * Line Item and Group Member counts
 
+The Default output is remote style as string/text. Use the -raw switch to get PSObjects.
+
 Command Line:
 ```
-Get-GroupMembership.ps1 [[-Computer] <string[]>] [-group] <string> [[-depth] <int16>] [[-LevelIndicator] <char>] [-Picture] [-raw] [-WhatIf] [-Confirm] [<CommonParameters>]
+C:\Scripts\GetGroupMembers\Get-GroupMembership.ps1 -Computer <String[]> -group <String> [-depth <Int16>] [-LevelIndicator <Char>] [-Picture] [-folder <String>]
+
+C:\Scripts\GetGroupMembers\Get-GroupMembership.ps1 -Computer <String[]> -group <String> [-depth <Int16>] [-LevelIndicator <Char>] [-raw]
+
+C:\Scripts\GetGroupMembers\Get-GroupMembership.ps1 [-Domain <String>] -group <String> [-depth <Int16>] [-LevelIndicator <Char>] [-raw]
+
+C:\Scripts\GetGroupMembers\Get-GroupMembership.ps1 [-Domain <String>] -group <String> [-depth <Int16>] [-LevelIndicator <Char>] [-Picture] [-folder <String>]
 ```
 
 Examples:
 ```
-.\Get-GroupMembership.ps1 -Computer . -Group Administrators | ft -autosize
+.EXAMPLE 
+    PS C:\> .\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators
 
-.\Get-GroupMembership.ps1 -Computer . -Group Administrators -Picture | ft -autosize
+    Outputs the group members from ThatMachine
 
-.\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators | ft -autosize
+.EXAMPLE 
+    PS C:\> get-content computers.txt | .\Get-GroupMembership.ps1 -Group Administrators
 
-get-content c:\computer.lst | .\Get-GroupMembership.ps1 -Group Administrators | ft -autosize
+    Outputs the group members from all systems listed in the file computers.txt
+
+.EXAMPLE 
+    PS C:\> ".", "server1", "server2" | .\Get-GroupMembership.ps1 -Group Administrators
+
+    Outputs the group members from the local system, server1, and server2
+
+.EXAMPLE 
+    PS C:\> .\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators -raw
+
+    Outputs a PSObject for further modification or piping to additional cmdlets
+
+.EXAMPLE 
+    PS C:\> .\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators -picture
+
+    Creates a .png of the data, named a la computer_group_date-time
+
+.EXAMPLE 
+    PS C:\> .\Get-GroupMembership.ps1 -Group Administrators
+    
+    Outputs the group members from the current domain
+
+.EXAMPLE 
+    PS C:\> .\Get-GroupMembership.ps1 -Domain MyADDomain -Group Administrators
+
+    Outputs the group members from the domain MyADDomain
 ```
