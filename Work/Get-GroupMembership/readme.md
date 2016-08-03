@@ -1,4 +1,4 @@
-##### Inventory/audit group memberships on servers and domains
+### Inventory/audit group memberships on servers and domains
 
 I had an old vbscript that did this ... but it was old. And it was vbscript.
 
@@ -6,11 +6,11 @@ Now, how hard could it be to re-write that simple vbscript into Powershell? Ther
 
 So, long story short: this script will inventory group memberships - both local system and AD - and do it recusively - both local system and AD. 
 
-Requires: 
+#### Requires: 
 * PowerShell v4 (lightly tested) or v5 (heavily tested)
 * The PowerShell ActiveDirectory module
 
-Features: 
+#### Features: 
 * Recursive!
 * Recursion depth configurable
 * Local and AD
@@ -25,7 +25,7 @@ Features:
 
 The Default output is remote style as string/text. Use the -raw switch to get PSObjects.
 
-Command Line:
+#### Command Line:
 ```
 C:\Scripts\GetGroupMembers\Get-GroupMembership.ps1 -Computer <String[]> -group <String> [-depth <Int16>] [-LevelIndicator <Char>] [-Picture] [-folder <String>]
 
@@ -36,7 +36,7 @@ C:\Scripts\GetGroupMembers\Get-GroupMembership.ps1 [-Domain <String>] -group <St
 C:\Scripts\GetGroupMembers\Get-GroupMembership.ps1 [-Domain <String>] -group <String> [-depth <Int16>] [-LevelIndicator <Char>] [-Picture] [-folder <String>]
 ```
 
-Examples:
+#### Examples:
 ```
 .EXAMPLE 
     PS C:\> .\Get-GroupMembership.ps1 -Computer ThatMachine -Group Administrators
