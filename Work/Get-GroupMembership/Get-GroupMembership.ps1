@@ -82,43 +82,22 @@ you can output numerous fields as a nice, native PowerShell object - for piping 
 #> 
 
 
-[CmdletBinding(SupportsShouldProcess=$false, DefaultParametersetName='PictureComputer')]
+[CmdletBinding(SupportsShouldProcess=$false)]
 param ( 
-    [parameter(Mandatory=$true, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$true, ParameterSetName='PictureComputer')]
-    [Parameter(Mandatory=$true, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$true, ParameterSetName = 'NoFormatComputer')]
+    [parameter(Mandatory=$false, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$true)]
     [Alias('CN','__Server','ComputerName','IPAddress','Name','NetBiosName')]
     [string[]]$Computer,
-    [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true, ParameterSetName = 'PictureDomain')]
-    [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true, ParameterSetName = 'NoFormatDomain')]
     [string] $Domain,
-    [Parameter(Mandatory=$true, ParameterSetName = 'PictureComputer')]
-    [Parameter(Mandatory=$true, ParameterSetName = 'PictureDomain')]
-    [Parameter(Mandatory=$true, ParameterSetName = 'NoFormatComputer')]
-    [Parameter(Mandatory=$true, ParameterSetName = 'NoFormatDomain')]
     [string] $group,
-    [Parameter(Mandatory=$false, ParameterSetName = 'PictureComputer')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'PictureDomain')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'NoFormatComputer')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'NoFormatDomain')]
     [Alias('Limit')]
     [ValidateScript({If ($_ -gt 0) { $True } Else { Throw "Depth must be greater than 0" }})]
     [int16] $depth = 7,
-    [parameter(Mandatory=$false, ParameterSetName = 'PictureComputer')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'PictureDomain')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'NoFormatComputer')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'NoFormatDomain')]
     [Alias('Indent','')]
     [char] $LevelIndicator = "─",
-    [Parameter(Mandatory=$false, ParameterSetName = 'NoFormatComputer')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'NoFormatDomain')]
     [Alias('NoFormat','AsObject','Object','NotText')]
     [switch] $raw = $false,
-    [Parameter(Mandatory=$false, ParameterSetName = 'PictureComputer')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'PictureDomain')]
     [Alias('Save', 'Image', 'Jpg')]
     [switch] $Picture = $false,
-    [Parameter(Mandatory=$false, ParameterSetName = 'PictureComputer')]
-    [Parameter(Mandatory=$false, ParameterSetName = 'PictureDomain')]
     [Alias('Path', 'SaveTo')]
     [ValidateScript({
         If (Test-Path -Path $_.ToString() -PathType Container) {
