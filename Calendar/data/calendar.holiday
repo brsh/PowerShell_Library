@@ -1,0 +1,124 @@
+/*
+ * Holiday
+ *
+ * $FreeBSD: src/usr.bin/calendar/calendars/calendar.holiday,v 1.36 2007/09/07 03:23:06 edwin Exp $
+ */
+
+#ifndef _calendar_holiday_
+#define _calendar_holiday_
+
+01/01	New Year's Day
+01/05	Last (twelfth) day of Christmastide
+01/06	Epiphany
+01/07	Orthodox Christmas
+01/23	US National Handwriting Day
+01/MonThird	Lee-Jackson Day in Virginia (3rd Monday)
+01/MonThird	Robert E. Lee's Birthday in Alabama & Mississippi (3rd Monday)
+01/MonThird	Martin Luther King Jr. Day (3rd Monday)
+02/01	Black History Month starts
+02/02	Candlemas
+02/02	Groundhog Day
+02/04	Rosa Parks Day
+02/05	Constitution Day in Mexico
+02/06	New Zealand Day
+02/12	Lincoln's Birthday
+02/14	Valentine's Day
+02/15	Susan B. Anthony Day
+02/22	Washington's Birthday
+02/MonThird	President's Day
+03/01	National Nutrition Month starts
+03/01	St. David's Day - Patron Saint of Wales
+03/02	Texas Independence day
+03/05	Mother-in-Law Day
+03/SunSecond	Daylight Savings Time begins in USA; clocks move forward
+03/08	International Women's Day - First in 1909
+03/11	Johnny Appleseed Day; anniversary of the death of John Chapman
+03/16	Black Press Day; first US Black newspaper founded in 1827
+03/17	St. Patrick's Day - one of the Patron Saints of Ireland
+03/25	Greek Independence Day in Cyprus
+03/25	Lady Day (a.k.a. the Feast of the Annunciation)
+Easter-47	Shrove Tuesday / Mardi Gras (day before Ash Wednesday)
+Easter-46	Ash Wednesday (First day of Lent)
+Easter-7	Palm Sunday (7 days before Easter)
+Easter-3	Maundy Thursday (3 days before Easter)
+Easter-2	Good Friday (2 days before Easter)
+Easter	Easter Sunday
+Easter+39	Ascension Day (10 days before Pentecost)
+Easter+49	Pentecost (Whitsunday)
+Easter+50	Whitmonday
+Easter+56	Trinity Sunday (7 days after Pentecost)
+Easter+60	Corpus Christi (11 days after Pentecost)
+04/01	April Fool's Day
+04/13	Thomas Jefferson's Birthday
+04/15	Tax Day
+04/16	Emancipation Day
+04/20	Cannabis Day
+04/21	San Jacinto Day in Texas
+04/22	Earth Day
+04/23	St. George's Day - Patron Saint of England
+04/FriLast	Arbor Day
+05/01	Labor Day in many places in the USA
+05/01	May Day in many places
+05/01	US Law Day (decl. by Eisenhower)
+05/04	Rhode Island Independence Day
+05/04	Star Wars Day (May the Fourth be with you)
+05/05	Cinco de Mayo
+05/07	May Day in United Kingdom
+05/08	Truman Day in Missouri
+05/09	VE day, end of Second World War, celebrated in many countries
+05/10	Confederate Memorial Day in South Carolina
+05/11	Minnesota Day in Minnesota
+05/20	Victoria Day in Canada
+05/MonLast	Memorial Day (Last Monday)
+05/SunSecond	Mother's Day
+05/SatFirst	Free Comic Book Day
+05/ThuFirst	National Day of Prayer
+06/14	Flag Day, USA
+06/17	Bunker Hill Day in Suffolk County, Massachusetts
+06/19	Emancipation Day in Texas
+06/27	Helen Keller Day
+06/SundayFirst	Children's Day
+06/SundayThird	Father's Day
+07/04	Independence Day
+07/SunFourth	Parents' Day
+08/26	Women's Equality Day
+09/MonFirst	Labor Day
+09/09	Admission Day in California
+09/29	Michaelmas
+10/08	Thanksgiving Day in Canada
+10/09	Leif Erikson Day commemorates the discovery of North America in AD 1000
+10/11	Patriot Day
+10/16	National Boss Day, USA
+10/17	Constitution/Citizenship Day
+10/18	Feast Day of St. Luke
+10/24	United Nations Day
+10/25	St. Crispin's day, patron saint of shoemakers
+10/30	Devil's Night
+10/31	All Hallows Eve ("Halloween")
+10/MonSecond	Columbus Day
+10/SatThird	Sweetest Day
+11/01	All Saints Day
+11/01	Samhain; Beginning of the Celtic year and most important holiday.
+11/02	All Souls Day
+11/02	Day of the Dead
+11/04	Will Rogers Day, USA
+11/11	Veterans Day
+11/11	Remembrance Day in Canada
+11/30	St. Andrew's Day - Patron Saint of Scotland
+11/SunFirst	Daylight Savings Time ends in USA; clocks move back
+11/ThuFourth	Thanksgiving Day
+11/FriFourth	Black Friday
+12/01	World AIDS Day
+12/06	St. Nicholas' Day
+12/07	Pearl Harbor Day
+12/08	Immaculate Conception of the Virgin Mary
+12/10	Human Rights Day
+12/17	Wright Brothers Day
+12/23	Festivus
+12/24	Christmas eve
+12/25	Christmastide begins: First day of Christmas
+12/26	Second day of Christmas (Boxing Day)
+12/26	St. Stephen's Day
+12/26	First day of Kwanzaa
+12/31	New Year's Eve
+#endif /* !_calendar_holiday_ */
