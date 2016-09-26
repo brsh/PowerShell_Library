@@ -40,7 +40,7 @@ Format of the files is date tab event text.
 Dates can be 2-digit month slash 2-digit day or 3 character abbreviation for day + First, Second, Third, Fourth, Fifth, or Last (to denote that specific occurence of a day).
 
 Examples:
-
+```
 09/23	Published the calendar script
 09/MonFirst	This is the first monday in September
-
+```
