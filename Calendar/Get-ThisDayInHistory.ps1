@@ -1,13 +1,76 @@
-﻿[CmdletBinding()]
+﻿<#
+    .SYNOPSIS 
+        Gets Today In History from misc. Calendar files
+         
+    .DESCRIPTION 
+        This script is a (slight) porting of the unix Calendar command (using the same text data files/format). It parses the data subfolder for calendar.* files, displaying lines that begin with "today's" date (today can be changed on the command line - if only life were like that). The script allows info from 0-10 days before and after today as well. By default, the output is a standard powershell object for further parsing. However, using the -FormatIt parameter, it will output sorted text wrapped to screen width (sort date, event | format-table -wrap -autosize). You can also specify the year for some of the "changeable" events (like Easter or Leap Day).
+ 
+    .PARAMETER  FormatIt
+        Switch sorting and word-wrap on
+ 
+    .PARAMETER  Today
+        Specify what day you'd like listed - can be in any valid datetime format (like 09/23 or "March 23")
 
-<#
+    .PARAMETER  Before
+        An integer from 0 to 10 specifying how many days before Today to list
 
--A int          Print lines from today and the next x days
--B int          Print lines from today and the previous x days
--t datetime     Sets date to dd.mm
--SkipWeekends   Print lines from today and next x days ... skipping weekend days 
+    .PARAMETER  After
+        An integer from 0 to 10 specifying how many days after Today to list
+
+    .PARAMETER  Year
+        4-digit number specifying a different year
+
+    .EXAMPLE 
+        PS C:\> .\Get-ThisDayinHistory.ps1
+
+        Date  Event
+        ----  -----
+        04/07 IBM announces System/360, 1964
+        04/07 Albert Hofmann synthesizes LSD in Switzerland, 1943
+        04/07 Alewives run, Cape Cod
+         
+    .EXAMPLE 
+        PS C:\> .\Get-ThisDayinHistory.ps1 -formatit
+
+        Date  Event
+        ----  -----
+        04/07 Albert Hofmann synthesizes LSD in Switzerland, 1943
+        04/07 Alewives run, Cape Cod
+        04/07 IBM announces System/360, 1964
+     
+    .EXAMPLE 
+        PS C:\> .\Get-ThisDayinHistory.ps1 -today "April 7" -Before 2 -After 1 -FormatIt
+
+        Date  Event
+        ----  -----
+        04/05 Thomas Hobbes born, 1588, philosopher
+        04/06 Joseph Smith founds Mormon Church, 1830
+        04/07 Albert Hofmann synthesizes LSD in Switzerland, 1943
+        04/07 Alewives run, Cape Cod
+        04/07 IBM announces System/360, 1964
+        04/08 Buddha born, 563 BC
+        04/08 David Rittenhouse born, 1732, astronomer & mathematician
+        04/08 Matthew Flinders and Nicolas Baudin meet in Encounter Bay, 1802
+ 
+    .EXAMPLE 
+        PS C:\> .\Get-ThisDayinHistory.ps1 -today 04/07 -Year 2015 -Before 2 -After 1 -FormatIt
+
+        Date  Event
+        ----  -----
+        04/05 Easter Sunday (the day of the highest church attendance)
+        04/05 Thomas Hobbes born, 1588, philosopher
+        04/06 Joseph Smith founds Mormon Church, 1830
+        04/07 Albert Hofmann synthesizes LSD in Switzerland, 1943
+        04/07 Alewives run, Cape Cod
+        04/07 IBM announces System/360, 1964
+        04/08 Buddha born, 563 BC
+        04/08 David Rittenhouse born, 1732, astronomer & mathematician
+        04/08 Matthew Flinders and Nicolas Baudin meet in Encounter Bay, 1802
+
 
 #>
+
+[CmdletBinding()]
 
 param (
     [parameter(Mandatory=$false)]
