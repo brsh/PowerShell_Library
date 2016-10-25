@@ -1,3 +1,11 @@
+Moved into its own repository...
+
+Go: https://github.com/brsh/Get-GroupMembership
+
+--------------
+Begin old stuff....
+
+
 ### Inventory/audit group memberships on servers and domains
 
 I had an old vbscript that did this ... but it was old. And it was vbscript.
