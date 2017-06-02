@@ -226,28 +226,3 @@ Process {
     }
 }
 End { }
-
-
-
-# function loginIE
-# {
-# $ie = New-Object -com "InternetExplorer.Application"
-# $ie.Navigate("http://www.mysite.com")
-# $ie.visible = $true
-
-# do { sleep 5 }
-# while ( $ie.busy )
-
-# $doc = $ie.document
-# $user = $doc.getElementById("Login")
-# $password = $doc.getElementById("Password")
-# $submit = $doc.getElementById("Submit")
-
-# $user.value = "yourUserName"
-# $password.value = "yourPassword"
-# $submit.Click();
-
-# $ie.Quit();
-# }
-
-
