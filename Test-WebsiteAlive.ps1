@@ -43,6 +43,11 @@
 .PARAMETER InvertMatch
     Inverts the meaning of ExpectedText and ExpectedCode - means the text must NOT exist in the response
 
+.PARAMETER IgnoreCertErrors
+    Will ignore cert errors and accept the data straight back from the site. This might not be a good thing... be careful.
+    Note: Your system might cache the url that you just allowed, and it will continue to work without -IgnoreCertError...
+    That should wear off before long....
+
 .EXAMPLE
     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com
 
@@ -105,10 +110,18 @@ param (
     [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Text')]
     [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Code')]
     [Alias('NotMatch', 'NoMatch', 'IsNot')]
-    [switch] $InvertMatch = $false
+    [switch] $InvertMatch = $false,
+    [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Text')]
+    [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Code')]
+    [Alias('BadCert', 'BadJuju', 'IgnoringCertsCanBeBad')]
+    [switch] $IgnoreCertErrors = $false
 )
 # ExpectedResponse
 Begin {
+    if ($IgnoreCertErrors) {
+        write-verbose "Ignoring Cert Errors (Did you think before you enabled this?)"
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    }
     $WebClient = New-Object System.Net.WebClient
 
     Function Test-Match {
@@ -166,11 +179,16 @@ Begin {
         switch ($Message) {
             {$_ -match 'calling DownloadString' }   { [string] $Temp = ($Message.Split(':')[-1]).Trim()
                                                         $Code = [string] $Temp -replace '\D+'
-                                                        $Response = $Temp.Split(')')[1].Trim().TrimEnd('.')
-                                                        write-verbose $Temp
+                                                        if ($Temp.IndexOf(')') -gt 0) {
+                                                            $Response = $Temp.Split(')')[1].Trim().TrimEnd('.')
+                                                        } else {
+                                                            $Response = $Temp.Trim().TrimEnd('.')
+                                                        }
                                                     }
             default                                 { $Code = '999'; $Response = $_ }
         }
+
+        if (-not $Code) { $Code = '998' }
 
         Return $Code, $Response
 
