@@ -4,13 +4,13 @@
 
 .DESCRIPTION
     Tests a website for response. Enter a url, and the script will test for a 'valid' response.
-    By default, valid is merely ... it responds ok (HTML 200). Very slim definition. You can,
+    By default, 'valid' is merely ... it responds ok (HTML 200). Very slim definition. You can,
     however, qualify the expected response (via the -ExpectedResponse parameter) so it must find
-    specific text (or texts via a string array) or, via the -InvertMatch parameter it must NOT find
+    specific text (or texts in a string array) or, via the -InvertMatch parameter, it must NOT find
     specific text. There's also an -All switch to force matching (or not) ALL ExpectedText entries.
 
-    Alternatively, you can specify that it must return specific HTML return codes (via the
-    -ResponseCode parameter with, yep, a string array).
+    Alternatively, you can specify that it must return specific HTML return code(s) (via the
+    -ResponseCode parameter; with multiples via, yep, a string array).
 
     It will return an object with True or False for alive (based on any Expected qualifiers) as
     well as the response code and text (if it can) or the encountered error (if it can't get the code)
@@ -29,7 +29,7 @@
         The Full Captured Text returned by the site (if any and if possible)
 
 .PARAMETER WebSite
-    The URL (URI, IRI, address...) to check. Returns boolean true for up, false for down
+    The URL (URI, IRI, address, site...) to check. Returns boolean true for up, false for down
 
 .PARAMETER ExpectedText
     The text you want to have somwhere in the reponse (or nowhere in the response if -InvertMatch is used)
@@ -43,10 +43,13 @@
 .PARAMETER InvertMatch
     Inverts the meaning of ExpectedText and ExpectedCode - means the text must NOT exist in the response
 
+.PARAMETER Credential
+    Username and password (in the form of a PSCredential ... see Get-Help Get-Credential) for protected locations
+
 .PARAMETER IgnoreCertErrors
     Will ignore cert errors and accept the data straight back from the site. This might not be a good thing... be careful.
     Note: Your system might cache the url that you just allowed, and it will continue to work without -IgnoreCertError...
-    That should wear off before long....
+    that usually wears off before long.
 
 .EXAMPLE
     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com
@@ -56,12 +59,12 @@
 .EXAMPLE
     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing'
 
-    Probably returns True with a 200 code (MS is likely to suggest this)
+    Probably returns True with a 200 code (MS is likely to suggest Bing)
 
 .EXAMPLE
     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Google' -InvertMatch
 
-    Probably returns True with a 200 code (MS would never suggest this)
+    Probably returns True with a 200 code (MS would never suggest Google)
 
 .EXAMPLE
     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing', 'Use Google'
@@ -74,19 +77,30 @@
     Probably returns False with a 200 code (cuz they won't suggest using both)
 
 .EXAMPLE
-     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200'
+    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200'
 
-     Probably returns True (cuz their site will likely be Ok)
-
-.EXAMPLE
-     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200', '500'
-
-     Probably returns true (the site will probably return 200; but also could have a server error)
+    Probably returns True (cuz their site will likely be Ok)
 
 .EXAMPLE
-     Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -ExpectedCode '200', '201'
+    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200', '500'
 
-     Probably returns false with a 401 (unless you're authorized)
+    Probably returns true (the site will probably return 200; but also could have a server error)
+
+.EXAMPLE
+    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -ExpectedCode '200', '201'
+
+    Probably returns false with a 401 (unless you're authorized)
+
+.EXAMPLE
+    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -Credentials $(Get-Credentials)
+
+    Might succeed, if you have the right password
+
+.EXAMPLE
+    $mycreds = Get-Credential
+    PS C:\>Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -Credentials $mycreds
+
+    Might succeed, if you have the right password
 
 #>
 
@@ -113,6 +127,10 @@ param (
     [switch] $InvertMatch = $false,
     [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Text')]
     [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Code')]
+    [Alias('Creds')]
+    [pscredential] $Credential = $null,
+    [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Text')]
+    [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='Code')]
     [Alias('BadCert', 'BadJuju', 'IgnoringCertsCanBeBad')]
     [switch] $IgnoreCertErrors = $false
 )
@@ -123,6 +141,19 @@ Begin {
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
     }
     $WebClient = New-Object System.Net.WebClient
+    $WebClient.UseDefaultCredentials = $True
+
+    if ($Credential) {
+        try {
+            Write-Verbose "Trying alt creds"
+            $WebClient.UseDefaultCredentials = $False
+            $WebClient.Credentials = new-object System.Net.NetworkCredential($Credential.GetNetworkCredential().UserName, $Credential.GetNetworkCredential().Password)
+        } catch {
+            Write-Verbose "Credential Error!! Switching to default creds..."
+            Write-Verbose $_.Exception.Message
+            $WebClient.UseDefaultCredentials = $True
+        }
+    }
 
     Function Test-Match {
         param (
@@ -243,4 +274,9 @@ Process {
         $out
     }
 }
-End { }
+End {
+    if ($IgnoreCertErrors) {
+        write-verbose "Attempting to set Ignore Certs back to normal..."
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = $null
+    }
+}
