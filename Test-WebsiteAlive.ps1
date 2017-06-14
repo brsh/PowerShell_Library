@@ -1,106 +1,106 @@
 ﻿<#
 .SYNOPSIS
-    Tests for valid HTML response from a Website
+Tests for valid HTML response from a Website
 
 .DESCRIPTION
-    Tests a website for response. Enter a url, and the script will test for a 'valid' response.
-    By default, 'valid' is merely ... it responds ok (HTML 200). Very slim definition. You can,
-    however, qualify the expected response (via the -ExpectedResponse parameter) so it must find
-    specific text (or texts in a string array) or, via the -InvertMatch parameter, it must NOT find
-    specific text. There's also an -All switch to force matching (or not) ALL ExpectedText entries.
+Tests a website for response. Enter a url, and the script will test for a 'valid' response.
+By default, 'valid' is merely ... it responds ok (HTML 200). Very slim definition. You can,
+however, qualify the expected response (via the -ExpectedResponse parameter) so it must find
+specific text (or texts in a string array) or, via the -InvertMatch parameter, it must NOT find
+specific text. There's also an -All switch to force matching (or not) ALL ExpectedText entries.
 
-    Alternatively, you can specify that it must return specific HTML return code(s) (via the
-    -ResponseCode parameter; with multiples via, yep, a string array).
+Alternatively, you can specify that it must return specific HTML return code(s) (via the
+-ResponseCode parameter; with multiples via, yep, a string array).
 
-    It will return an object with True or False for alive (based on any Expected qualifiers) as
-    well as the response code and text (if it can) or the encountered error (if it can't get the code)
+It will return an object with True or False for alive (based on any Expected qualifiers) as
+well as the response code and text (if it can) or the encountered error (if it can't get the code)
 
 .INPUTS
-    Supports pipeline, so you can pass it any of the parameters, as long as you specify the name
+Supports pipeline, so you can pass it any of the parameters, as long as you specify the name
 
 .OUTPUTS
-    Returns an object that lists:
-        True or False if the site is alive (qualified by any Expected Texts or Codes)
-        The HTML Reponse Code (if it can get it)
-        The HTML Response Code Meaning (if it can get it)
+Returns an object that lists:
+    True or False if the site is alive (qualified by any Expected Texts or Codes)
+    The HTML Reponse Code (if it can get it)
+    The HTML Response Code Meaning (if it can get it)
 
-    Plus (not in the default list of properties):
-        The Error Message (if the process failed)
-        The Full Captured Text returned by the site (if any and if possible)
+Plus (not in the default list of properties):
+    The Error Message (if the process failed)
+    The Full Captured Text returned by the site (if any and if possible)
 
 .PARAMETER WebSite
-    The URL (URI, IRI, address, site...) to check. Returns boolean true for up, false for down
+The URL (URI, IRI, address, site...) to check. Returns boolean true for up, false for down
 
 .PARAMETER ExpectedText
-    The text you want to have somwhere in the reponse (or nowhere in the response if -InvertMatch is used)
+The text you want to have somwhere in the reponse (or nowhere in the response if -InvertMatch is used)
 
 .PARAMETER ExpectedCode
-    The response code expected from the site (200 = ok; 404 = not found, etc.) (or not expected if -InvertMatch is used)
+The response code expected from the site (200 = ok; 404 = not found, etc.) (or not expected if -InvertMatch is used)
 
 .PARAMETER MustMatchAll
-    Must match all ExpectedText entries (only useful if you specify more than 1 ExpectedText items)
+Must match all ExpectedText entries (only useful if you specify more than 1 ExpectedText items)
 
 .PARAMETER InvertMatch
-    Inverts the meaning of ExpectedText and ExpectedCode - means the text must NOT exist in the response
+Inverts the meaning of ExpectedText and ExpectedCode - means the text must NOT exist in the response
 
 .PARAMETER Credential
-    Username and password (in the form of a PSCredential ... see Get-Help Get-Credential) for protected locations
+Username and password (in the form of a PSCredential ... see Get-Help Get-Credential) for protected locations
 
 .PARAMETER IgnoreCertErrors
-    Will ignore cert errors and accept the data straight back from the site. This might not be a good thing... be careful.
-    Note: Your system might cache the url that you just allowed, and it will continue to work without -IgnoreCertError...
-    that usually wears off before long.
+Will ignore cert errors and accept the data straight back from the site. This might not be a good thing... be careful.
+Note: Your system might cache the url that you just allowed, and it will continue to work without -IgnoreCertError...
+that usually wears off before long.
 
 .EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com
 
-    Probably returns True with a 200 code
-
-.EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing'
-
-    Probably returns True with a 200 code (MS is likely to suggest Bing)
+Probably returns True with a 200 code
 
 .EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Google' -InvertMatch
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing'
 
-    Probably returns True with a 200 code (MS would never suggest Google)
-
-.EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing', 'Use Google'
-
-    Probably returns True with a 200 code (cuz they will suggest using Bing, so it matches)
+Probably returns True with a 200 code (MS is likely to suggest Bing)
 
 .EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing', 'Use Google' -All
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Google' -InvertMatch
 
-    Probably returns False with a 200 code (cuz they won't suggest using both)
-
-.EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200'
-
-    Probably returns True (cuz their site will likely be Ok)
+Probably returns True with a 200 code (MS would never suggest Google)
 
 .EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200', '500'
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing', 'Use Google'
 
-    Probably returns true (the site will probably return 200; but also could have a server error)
-
-.EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -ExpectedCode '200', '201'
-
-    Probably returns false with a 401 (unless you're authorized)
+Probably returns True with a 200 code (cuz they will suggest using Bing, so it matches)
 
 .EXAMPLE
-    Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -Credentials $(Get-Credentials)
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedText 'Use Bing', 'Use Google' -All
 
-    Might succeed, if you have the right password
+Probably returns False with a 200 code (cuz they won't suggest using both)
 
 .EXAMPLE
-    $mycreds = Get-Credential
-    PS C:\>Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -Credentials $mycreds
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200'
 
-    Might succeed, if you have the right password
+Probably returns True (cuz their site will likely be Ok)
+
+.EXAMPLE
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com -ExpectedCode '200', '500'
+
+Probably returns true (the site will probably return 200; but also could have a server error)
+
+.EXAMPLE
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -ExpectedCode '200', '201'
+
+Probably returns false with a 401 (unless you're authorized)
+
+.EXAMPLE
+Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -Credentials $(Get-Credentials)
+
+Might succeed, if you have the right password
+
+.EXAMPLE
+$mycreds = Get-Credential
+PS C:\>Test-WebsiteAlive.ps1 -WebSite www.microsoft.com/AllBillsSecrets -Credentials $mycreds
+
+Might succeed, if you have the right password
 
 #>
 
